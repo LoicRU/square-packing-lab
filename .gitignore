@@ -1,0 +1,7 @@
+node_modules
+dist
+*.log
+.DS_Store
+_u.zip
+Claude outputs/
+data/*.sqlite
