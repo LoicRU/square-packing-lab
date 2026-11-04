@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Algorithmes de square packing — MaxRects, Guillotine, Skyline, recuit, forces, Circle → Square</title>
+<meta name="description" content="Principe, complexité, avantages et limites des sept algorithmes de Square Packing Lab : MaxRects, Guillotine, Skyline, recuit simulé, forces de répulsion, Circle → Square et référence par étagères.">
+<link rel="canonical" href="https://square-packing-lab.example/algorithms.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b0c0f">
+<meta property="og:site_name" content="Square Packing Lab"><meta property="og:locale" content="fr_FR"><meta property="og:type" content="website">
+<meta property="og:title" content="Algorithmes de square packing — MaxRects, Guillotine, Skyline, recuit, forces, Circle → Square"><meta property="og:description" content="Principe, complexité, avantages et limites des sept algorithmes de Square Packing Lab : MaxRects, Guillotine, Skyline, recuit simulé, forces de répulsion, Circle → Square et référence par étagères.">
+<meta property="og:url" content="https://square-packing-lab.example/algorithms.html"><meta property="og:image" content="https://square-packing-lab.example/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Carrés colorés, certains inclinés, rangés dans un grand carré">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Algorithmes de square packing — MaxRects, Guillotine, Skyline, recuit, forces, Circle → Square"><meta name="twitter:description" content="Principe, complexité, avantages et limites des sept algorithmes de Square Packing Lab : MaxRects, Guillotine, Skyline, recuit simulé, forces de répulsion, Circle → Square et référence par étagères."><meta name="twitter:image" content="https://square-packing-lab.example/og.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Algorithmes de square packing — MaxRects, Guillotine, Skyline, recuit, forces, Circle → Square", "inLanguage": "fr", "url": "https://square-packing-lab.example/algorithms.html", "isPartOf": {"@type": "WebSite", "name": "Square Packing Lab", "url": "https://square-packing-lab.example/"}}</script>
+<link rel="stylesheet" href="/src/styles/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="nav">
+  <a class="brand" href="/"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="6" width="52" height="52" fill="none" stroke="#ece7dc" stroke-width="4"/><rect x="12" y="12" width="24" height="24" fill="#ff6a3d"/><rect x="40" y="12" width="12" height="12" fill="#f0a830"/><rect x="12" y="40" width="12" height="12" fill="#6ab0ff"/><g transform="rotate(45 44 44)"><rect x="36" y="36" width="16" height="16" fill="#7bd88f"/></g></svg><span>Square Packing Lab</span></a>
+  <nav class="links" aria-label="Navigation principale"><a href="/">Accueil</a><a href="/simulator.html" class="cta">Simulateur</a><a href="/parallel.html">Parallel Lab</a><a href="/algorithms.html" aria-current="page">Algorithmes</a><a href="/learn.html">Le problème</a><a href="/about.html">À propos</a></nav>
+</header>
+<main id="main">
+<div class="wrap doc">
+<h1>Les algorithmes</h1>
+<p class="lead">Le mode par défaut résout le problème « taille maximale » (ci-dessous) ; les sept méthodes suivantes servent au packing général de tailles variées. Toutes sont exécutées dans un Web Worker et toutes vérifiées par le même validateur exact. Ci-dessous : l’idée, le coût, les points forts et les limites — sans promesse d’optimalité.</p>
+<div class="toc"><a class="pill" href="#maxsize">Taille maximale</a><a class="pill" href="#parallel">Recherche parallèle</a><a class="pill" href="#c2s">Circle → Square</a><a class="pill" href="#maxrects">MaxRects</a><a class="pill" href="#guillotine">Guillotine</a><a class="pill" href="#skyline">Skyline</a><a class="pill" href="#anneal">Recuit simulé</a><a class="pill" href="#forces">Forces</a><a class="pill" href="#shelf">Référence</a></div>
+<p class="note info">Notations : <code>n</code> = nombre de carrés, <code>F</code> = nombre de rectangles libres, <code>it</code> = itérations, <code>k</code> = voisins par objet (grille spatiale).</p>
+
+<h2 id="maxsize">Taille maximale (mode par défaut du simulateur)</h2>
+<p>Problème : <b>N carrés identiques</b>, rotation libre entre 0° et 90°, tous placés, sans collision ni débordement. On cherche le <b>plus grand côté commun</b>. Forme normalisée : carrés unité dans un conteneur <code>S × S</code>, on minimise <code>S</code> ; le côté du petit carré vaut <code>a = W / S</code> et le remplissage <code>N / S²</code>.</p>
+<ol>
+<li><b>Borne haute valide</b> : le réseau <code>k × k</code>, <code>k = ⌈√N⌉</code> (S = k). <b>Borne basse prouvée</b> : <code>S ≥ √N</code> (aire).</li>
+<li><b>Recherche dichotomique sur la taille</b> : on teste une cible <code>t</code> sous la meilleure solution. Si une disposition <i>sans aucune pénétration</i> est trouvée et certifiée par le SAT exact, la borne haute descend à <code>t</code> ; après plusieurs échecs, la cible devient la « limite explorée » (ce n’est <b>pas</b> une preuve d’impossibilité).</li>
+<li><b>Configurations initiales multiples</b> pour chaque cible : compression homothétique de la meilleure solution, réseau décalé, réseau tourné, hexagonal, aléatoire, centres d’un empilement de disques (Circle → Square), reprise du meilleur échec.</li>
+<li><b>Recuit simulé</b> sur positions <i>et</i> angles : énergie <code>E = Σ pénétration² (SAT) + débordement²</code>, calcul local par grille, température décroissante, amplitude adaptative. Mouvements de translation, de rotation et <b>de téléportation</b> : le carré le plus contraint est déplacé vers le meilleur trou parmi plusieurs candidats, ce qui permet de réorganiser la configuration au lieu de garder un mauvais départ.</li>
+<li><b>Optimisation locale finale</b> : projection par répulsion le long de la normale SAT jusqu’à pénétration nulle (carrés gonflés de 2·10⁻⁵ pour garantir une marge), puis <b>vérification exacte indépendante</b> avant toute acceptation.</li>
+</ol>
+<table class="t"><tbody><tr><td>Complexité</td><td>O(itérations · N · k) ; budget par défaut ≈ 4 millions de mouvements</td></tr><tr><td>Points forts</td><td>Exploite réellement la rotation (N = 5, 10 : valeurs connues retrouvées) ; solution toujours valide ; mouvements visibles en direct.</td></tr><tr><td>Limites</td><td>Heuristique stochastique : les résultats varient selon la graine (d’où les tentatives multiples), N = 19 reste souvent bloqué sur le réseau 5×5, la qualité baisse pour N grand. <b>Aucune garantie d’optimalité globale.</b></td></tr></tbody></table>
+
+<h2 id="pipeline">Pipeline Circle → Square en 5 phases</h2>
+<p>Stratégie par défaut du simulateur : <b>1</b> génération de cercles aléatoires, <b>2</b> Circle Packing (formation puis compaction), <b>3</b> transformation cercle → carré inscrit (×√2), <b>4</b> Square Packing (dichotomie, recuit, mouvements de groupe, relocalisation exacte par No-Fit Polygon), <b>5</b> optimisation finale (pool de solutions valides, perturbations). Chaque image est un état réel du calcul, enregistré puis rejouable. La transformation seule est moins bonne que le réseau k×k ; l’amélioration vient des phases 4 et 5. Aucune optimalité n’est garantie.</p>
+
+<h2 id="c2s">Circle → Square</h2>
+<p>Pipeline en quatre phases : (1) placer des <b>disques</b> sans chevauchement, (2) les <b>transformer</b> en carrés de même centre, (3) <b>vérifier exactement</b> les collisions et sorties, (4) <b>ré-optimiser</b> directement sur les carrés (forces ou recuit), en conservant le meilleur résultat valide.</p>
+<div class="eq">rayon du disque ρ = a/2 + λ·(a/√2 − a/2)   (λ = 1 : disque circonscrit au carré → carré inscrit dans le disque)</div>
+<p>Avec le carré <b>inscrit</b> dans son disque (côté r√2), la validité est garantie mais la densité plafonne : (2/π)·(π/(2√3)) ≈ 57,7 %. Avec le carré <b>circonscrit</b> (côté 2r), la densité théorique monte mais les coins se chevauchent. L’<b>orientation optimisée</b> et un λ intermédiaire cherchent un compromis, que l’étude intégrée au simulateur quantifie.</p>
+<table class="t"><tbody><tr><td>Complexité</td><td>O(it · n · k)</td></tr><tr><td>Rotation</td><td>libre</td></tr><tr><td>Points forts</td><td>Pédagogique ; transformation visible ; le résultat final est toujours valide (sous-ensemble certifié si besoin).</td></tr><tr><td>Limites</td><td>Souvent moins dense que les méthodes constructives sur des instances denses ; sensible à λ.</td></tr></tbody></table>
+
+<h2 id="maxrects">MaxRects</h2>
+<p>Maintient la liste des <b>rectangles libres maximaux</b>. Chaque carré (trié par taille décroissante) est placé dans le meilleur rectangle selon une heuristique : <i>Best Short Side Fit</i>, <i>Best Area Fit</i> ou <i>Bottom-Left</i>. Le rectangle utilisé est découpé et les rectangles inclus dans d’autres sont élagués (Jylänki, 2010).</p>
+<table class="t"><tbody><tr><td>Complexité</td><td>O(n · F)</td></tr><tr><td>Rotation</td><td>axes uniquement (une rotation de 90° est une symétrie du carré)</td></tr><tr><td>Points forts</td><td>Très bonnes dispositions denses, déterministe, rapide jusqu’à 1 000 carrés.</td></tr><tr><td>Limites</td><td>Ne trouve pas les dispositions inclinées (ex. n = 5, 11, 17…).</td></tr></tbody></table>
+
+<h2 id="guillotine">Guillotine</h2>
+<p>Chaque placement coupe le rectangle libre en deux par une coupe « guillotine ». Choix du rectangle : <i>Best Area Fit</i> / <i>Best Short Side</i> ; règle de coupe : axe court, axe long ou aire maximale ; fusion optionnelle des rectangles libres adjacents.</p>
+<table class="t"><tbody><tr><td>Complexité</td><td>O(n · F)</td></tr><tr><td>Points forts</td><td>Structure simple (découpable à la scie), très rapide.</td></tr><tr><td>Limites</td><td>Moins flexible que MaxRects : les rectangles libres sont disjoints.</td></tr></tbody></table>
+
+<h2 id="skyline">Skyline</h2>
+<p>Ne retient que le « profil » supérieur de l’empilement. Chaque carré est posé au point le plus bas (<i>Bottom-Left</i>) ou là où il gaspille le moins d’espace sous lui (<i>min waste</i>).</p>
+<table class="t"><tbody><tr><td>Complexité</td><td>O(n · s), s = segments du profil</td></tr><tr><td>Points forts</td><td>Mémoire minimale, excellent sur conteneurs allongés.</td></tr><tr><td>Limites</td><td>Ne réutilise pas les trous sous le profil.</td></tr></tbody></table>
+
+<h2 id="anneal">Recuit simulé</h2>
+<p>Insère les carrés par lots et minimise l’énergie <code>E = Σ pénétration²</code> (SAT) par un schéma de Metropolis : déplacements et rotations aléatoires, température décroissante, calcul d’énergie local via une grille. Seul le dernier état sans aucun chevauchement est retenu comme résultat.</p>
+<table class="t"><tbody><tr><td>Complexité</td><td>O(it · n · k)</td></tr><tr><td>Rotation</td><td>libre (option)</td></tr><tr><td>Points forts</td><td>Peut trouver des dispositions inclinées ; paramètres modifiables en direct (mode expérimental).</td></tr><tr><td>Limites</td><td>Stochastique, sensible aux réglages, moins dense que les constructifs à grand n.</td></tr></tbody></table>
+
+<h2 id="forces">Répulsion / forces</h2>
+<p>Même énergie que le recuit, mais relaxée par des <b>forces de répulsion</b> le long de la normale SAT (méthode de Jacobi), avec bruit décroissant et couple d’alignement des faces. Les tailles sont légèrement gonflées pour garantir une marge de sécurité à la validation.</p>
+<table class="t"><tbody><tr><td>Complexité</td><td>O(it · n · k)</td></tr><tr><td>Points forts</td><td>Convergence plus régulière que le recuit ; sert aussi de relaxeur au pipeline Circle → Square.</td></tr><tr><td>Limites</td><td>Peut rester bloqué dans un minimum local ; départ « MaxRects » proposé pour l’améliorer.</td></tr></tbody></table>
+
+<h2 id="shelf">Référence : étagères (first-fit decreasing)</h2>
+<p>Algorithme volontairement simple : carrés triés par taille décroissante, rangés en lignes (étagères). Il sert de <b>point de comparaison</b> : une méthode plus sophistiquée doit au moins faire mieux.</p>
+
+<h2 id="parallel">Recherche parallèle évolutive (Parallel Lab)</h2>
+<p>Le <a href="/parallel.html">Parallel Lab</a> lance plusieurs recherches à la fois sur un serveur Node (vrais <code>worker_threads</code>) et partage leurs meilleurs résultats dans un <b>Elite Pool</b> : un record, des élites, des solutions volontairement différentes (dédoublonnage par les 8 symétries du carré) et un historique. Les nouvelles recherches partent soit du record, soit d’élites variées, soit d’une recombinaison de deux solutions, soit d’une configuration neuve ; un algorithme de bandit ajuste ces proportions d’après les améliorations réellement obtenues, avec un plancher d’exploration.</p>
+<p><b>Garde-fou :</b> toute solution traverse une autorité de validation (SAT exact + vérification indépendante par aires de polygones) avant d’entrer dans le pool ou d’être affichée. <b>Limites :</b> c’est de l’heuristique — un résultat valide n’est jamais présenté comme optimal ; la reprise après redémarrage du serveur est approximative (pool et record restaurés, pas l’état interne du recuit) ; sur le benchmark fourni (2 cœurs, budgets courts), le mode évolutif n’est pas démontré supérieur à des recherches indépendantes.</p>
+<h2>Comment lire une comparaison</h2>
+<p>Dans l’onglet <i>Comparaison</i> du simulateur, tous les algorithmes reçoivent <b>exactement</b> la même instance (mêmes tailles issues de la même graine). Le remplissage mesuré est la surface des carrés <i>valides</i> divisée par la surface du conteneur. Les temps dépendent de votre machine ; les nombres de placements et remplissages sont reproductibles.</p>
+<p><a class="btn primary" href="/simulator.html">Essayer dans le simulateur</a></p>
+</div></main>
+<footer class="footer"><div class="wrap"><span>Square Packing Lab · licence MIT · aucun cookie, aucun traceur · simulateur 100 % local ; Parallel Lab : calcul sur le serveur que vous configurez.</span><span><a href="/simulator.html">Simulateur</a> · <a href="/algorithms.html">Algorithmes</a> · <a href="/learn.html">Le problème</a> · <a href="/about.html">À propos</a></span></div></footer>
+</body>
+</html>
