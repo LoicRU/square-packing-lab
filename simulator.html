@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulateur de Square Packing — Square Packing Lab</title>
+<meta name="description" content="Simulateur interactif de packing de carrés : MaxRects, Guillotine, Skyline, recuit simulé, forces et Circle → Square. Résultats vérifiés exactement, reproductibles, sans inscription.">
+<link rel="canonical" href="https://square-packing-lab.example/simulator.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b0c0f">
+<meta property="og:site_name" content="Square Packing Lab"><meta property="og:locale" content="fr_FR"><meta property="og:type" content="website">
+<meta property="og:title" content="Simulateur de Square Packing — Square Packing Lab"><meta property="og:description" content="Simulateur interactif de packing de carrés : MaxRects, Guillotine, Skyline, recuit simulé, forces et Circle → Square. Résultats vérifiés exactement, reproductibles, sans inscription.">
+<meta property="og:url" content="https://square-packing-lab.example/simulator.html"><meta property="og:image" content="https://square-packing-lab.example/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Carrés colorés, certains inclinés, rangés dans un grand carré">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Simulateur de Square Packing — Square Packing Lab"><meta name="twitter:description" content="Simulateur interactif de packing de carrés : MaxRects, Guillotine, Skyline, recuit simulé, forces et Circle → Square. Résultats vérifiés exactement, reproductibles, sans inscription."><meta name="twitter:image" content="https://square-packing-lab.example/og.png">
+
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Simulateur de Square Packing", "applicationCategory": "EducationalApplication", "operatingSystem": "Any", "inLanguage": "fr", "url": "https://square-packing-lab.example/simulator.html", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"}}</script>
+<script type="module" src="/src/app/simulator.js"></script>
+<link rel="stylesheet" href="/src/styles/styles.css">
+</head>
+<body data-pane="stage">
+<a class="skip" href="#scene">Aller à la simulation</a>
+<header class="nav">
+  <a class="brand" href="/"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="6" width="52" height="52" fill="none" stroke="#ece7dc" stroke-width="4"/><rect x="12" y="12" width="24" height="24" fill="#ff6a3d"/><rect x="40" y="12" width="12" height="12" fill="#f0a830"/><rect x="12" y="40" width="12" height="12" fill="#6ab0ff"/><g transform="rotate(45 44 44)"><rect x="36" y="36" width="16" height="16" fill="#7bd88f"/></g></svg><span>Square Packing Lab</span></a>
+  <nav class="links" aria-label="Navigation principale"><a href="/">Accueil</a><a href="/simulator.html" aria-current="page" class="cta">Simulateur</a><a href="/parallel.html">Parallel Lab</a><a href="/algorithms.html">Algorithmes</a><a href="/learn.html">Le problème</a><a href="/about.html">À propos</a></nav>
+</header>
+<noscript><div class="noscript">Ce simulateur nécessite JavaScript (calculs exécutés localement dans votre navigateur).</div></noscript>
+<div class="errbanner" id="errBanner" role="alert"></div>
+
+<main class="sim" id="main">
+  <h1 class="sr-only">Simulateur de Square Packing</h1>
+  <!-- ================= CONFIGURATION ================= -->
+  <aside class="pane cfg" id="cfgPane" aria-label="Configuration">
+    <h2>Configuration</h2>
+    <details open><summary>Problème</summary><div class="body">
+      <div class="seg" role="radiogroup" aria-label="Problème à résoudre">
+        <label><input type="radio" name="problem" value="maxsize" checked>Taille maximale</label>
+        <label><input type="radio" name="problem" value="pack">Packing général</label>
+      </div>
+      <p class="note" id="problemNote"></p>
+      <label class="f">Nombre de carrés N
+        <div class="row" style="flex-wrap:nowrap"><input id="n" type="number" min="1" step="1" value="10" style="width:92px"><input id="nRange" type="range" min="1" max="1000" value="10" aria-label="Nombre de carrés (curseur)"></div>
+      </label>
+      <div class="chips" id="nChips" aria-label="Valeurs prédéfinies"></div>
+    </div></details>
+
+    <div id="msCfg">
+      <details open><summary>Optimisation de la taille</summary><div class="body">
+        <p class="note info">N carrés <b>identiques</b>, rotation libre (0°–90°), <b>tous</b> placés, sans collision ni débordement. Le programme cherche le <b>plus grand côté</b> commun.</p>
+        <label class="f">Côté du conteneur (unité arbitraire)<input id="msW" type="number" step="1" min="0.05" value="20"></label>
+        <label class="f">Stratégie<select id="msStrategy"><option value="pipeline" selected>Pipeline Circle → Square en 5 phases (observable)</option><option value="full">Dichotomie + recuit + compression (complet)</option><option value="anneal">Recuit multi-départs seul</option><option value="circle">Circle → Square (expérimental)</option></select></label>
+        <p class="note" id="msNote"></p>
+        <div class="grid2">
+          <label class="f">Itérations max<input id="msIter" type="number" min="0" step="1000" placeholder="auto"></label>
+          <label class="f">Graine<div class="row" style="flex-wrap:nowrap"><input id="msSeed" type="number" step="1" value="42"><button class="btn sm" id="bDice2" title="Autre graine" type="button">🎲</button></div></label>
+        </div>
+      </div></details>
+      <details><summary>Réglages en direct (expert)</summary><div class="body">
+        <p class="note info">Appliqués immédiatement à la recherche en cours.</p>
+        <label class="f"><span>Température du recuit × <b id="lp6v">0.30</b></span><input id="lp-tempScale" type="range" min="0.05" max="3" step="0.05" value="0.3"></label>
+        <label class="f"><span>Amplitude des mouvements × <b id="lp7v">1.00</b></span><input id="lp-ampScale" type="range" min="0.2" max="3" step="0.05" value="1"></label>
+      </div></details>
+    </div>
+
+    <div id="legacyCfg" hidden>
+    <details open><summary>Tailles des objets</summary><div class="body">
+      <div class="seg" role="radiogroup" aria-label="Type de tailles">
+        <label><input type="radio" name="sizeMode" value="identical">Identiques</label>
+        <label><input type="radio" name="sizeMode" value="random" checked>Aléatoires</label>
+        <label><input type="radio" name="sizeMode" value="preset">Prédéfinies</label>
+      </div>
+      <div class="grid2" id="sizeRange">
+        <label class="f"><span id="sMinLbl">Taille min</span><input id="sMin" type="number" step="0.1" min="0.05" value="1"></label>
+        <label class="f"><span id="sMaxLbl">Taille max</span><input id="sMax" type="number" step="0.1" min="0.05" value="2.5"></label>
+      </div>
+      <div id="presetBox" hidden>
+        <label class="f">Jeu de tailles<select id="presetId"></select></label>
+        <label class="f" id="customSizesBox" hidden>Tailles (séparées par des virgules, répétées cycliquement)<input id="presetSizes" type="text" value="3, 2, 2, 1"></label>
+      </div>
+    </div></details>
+
+    <details open><summary>Conteneur</summary><div class="body">
+      <div class="seg" role="radiogroup" aria-label="Forme du conteneur">
+        <label><input type="radio" name="containerMode" value="square" checked>Carré</label>
+        <label><input type="radio" name="containerMode" value="rect">Rectangle</label>
+      </div>
+      <div class="grid2">
+        <label class="f"><span id="wLbl">Côté</span><input id="W" type="number" step="0.5" min="0.05" value="20"></label>
+        <label class="f" id="hBox" hidden>Hauteur<input id="H" type="number" step="0.5" min="0.05" value="20"></label>
+      </div>
+    </div></details>
+
+    <details open><summary>Algorithme & rotation</summary><div class="body">
+      <label class="f">Algorithme<select id="algorithm"></select></label>
+      <p class="note" id="algoNote"></p>
+      <label class="chk"><input id="rotation" type="checkbox"> Rotation libre autorisée <small style="color:var(--mut)">(recuit, forces, Circle→Square)</small></label>
+      <div id="opt-maxrects" class="algoopt"><label class="f">Heuristique<select id="o-mr-h"><option value="bssf">Best Short Side Fit</option><option value="baf">Best Area Fit</option><option value="bl">Bottom-Left</option></select></label></div>
+      <div id="opt-guillotine" class="algoopt" hidden>
+        <div class="grid2"><label class="f">Choix<select id="o-g-c"><option value="baf">Best Area Fit</option><option value="bssf">Best Short Side</option></select></label>
+        <label class="f">Coupe<select id="o-g-s"><option value="slas">Axe court</option><option value="llas">Axe long</option><option value="maxas">Aire max</option></select></label></div>
+        <label class="chk"><input id="o-g-m" type="checkbox" checked> Fusionner les rectangles libres</label></div>
+      <div id="opt-skyline" class="algoopt" hidden><label class="f">Heuristique<select id="o-s-h"><option value="bl">Bottom-Left</option><option value="minwaste">Perte minimale</option></select></label></div>
+      <div id="opt-continuous" class="algoopt" hidden><label class="f">Initialisation<select id="o-c-i"><option value="random">Aléatoire</option><option value="maxrects">Départ MaxRects</option></select></label></div>
+      <div id="opt-c2s" class="algoopt" hidden>
+        <label class="f">Transformation cercle → carré<select id="o-t"><option value="inscribed">Carré inscrit dans le cercle</option><option value="circumscribed">Carré circonscrit au cercle</option><option value="optimized">Orientation optimisée (λ réglable)</option></select></label>
+        <label class="f" id="lamBox"><span>λ = <b id="lamV">0.50</b> (0 : disque inscrit · 1 : disque circonscrit)</span><input id="o-l" type="range" min="0" max="1" step="0.05" value="0.5"></label>
+        <label class="chk"><input id="o-rs" type="checkbox"> Rechercher le meilleur rayon (λ ∈ {0 … 1})</label>
+        <label class="f">Relaxation sur les carrés<select id="o-rx"><option value="forces">Forces</option><option value="anneal">Recuit</option></select></label>
+      </div>
+      <div class="grid2">
+        <label class="f">Itérations max<input id="iterations" type="number" min="1" step="100" value="3000"></label>
+        <label class="f">Graine<div class="row" style="flex-wrap:nowrap"><input id="seed" type="number" step="1" value="42"><button class="btn sm" id="bDice" title="Autre graine" type="button">🎲</button></div></label>
+      </div>
+    </div></details>
+
+    </div>
+
+    <div id="legacyExpert" hidden>
+    <details><summary>Mode expérimental (paramètres en direct)</summary><div class="body">
+      <p class="note info">Modifiez ces paramètres <b>pendant</b> la recherche : ils s'appliquent immédiatement au solveur en cours (continu / Circle→Square).</p>
+      <label class="f"><span>Raideur des forces <b id="lp1v">0.75</b></span><input id="lp-stiffness" type="range" min="0.1" max="1.2" step="0.05" value="0.75"></label>
+      <label class="f"><span>Bruit <b id="lp2v">0.05</b></span><input id="lp-noise" type="range" min="0" max="0.4" step="0.01" value="0.05"></label>
+      <label class="f"><span>Température du recuit ×<b id="lp3v">0.02</b></span><input id="lp-tScale" type="range" min="0.001" max="0.3" step="0.001" value="0.02"></label>
+      <label class="f"><span>Budget par étape <b id="lp4v">120</b></span><input id="lp-stageIters" type="range" min="10" max="600" step="10" value="120"></label>
+      <label class="f"><span>Taille des lots d'insertion <b id="lp5v">5 %</b></span><input id="lp-batchFrac" type="range" min="0.005" max="0.3" step="0.005" value="0.05"></label>
+    </div></details>
+    </div>
+
+    <details><summary>Configurations</summary><div class="body">
+      <div class="row"><input id="cfgName" type="text" placeholder="Nom de la configuration" style="flex:1;min-width:120px"><button class="btn sm" id="bSaveCfg" type="button">Sauver</button></div>
+      <label class="f">Configurations sauvegardées (navigateur)<select id="savedCfgs"><option value="">—</option></select></label>
+      <div class="row"><button class="btn sm" id="bLoadCfg" type="button">Charger</button><button class="btn sm" id="bDelCfg" type="button">Supprimer</button><button class="btn sm" id="bShare" type="button">Lien de partage</button></div>
+      <div class="row"><button class="btn sm" id="bExportCfg" type="button">Exporter .json</button><label class="btn sm" style="cursor:pointer">Importer<input id="fImportCfg" type="file" accept="application/json" hidden></label></div>
+      <label class="f">Limite de carrés (selon votre navigateur)<input id="maxN" type="number" min="10" max="5000" step="10" value="1000"></label>
+    </div></details>
+  </aside>
+
+  <!-- ================= SIMULATION ================= -->
+  <section class="stage" aria-label="Zone de simulation"><h2 class="sr-only">Simulation</h2>
+    <div class="stagebar">
+      <div class="l" role="status" aria-live="polite"><span class="badge" id="statusBadge">Prêt</span><span class="badge" id="validBadge" hidden></span></div>
+      <div class="l">
+        <span class="tog on" id="tGrid" role="button" tabindex="0">Grille</span>
+        <span class="tog" id="tVoid" role="button" tabindex="0">Espaces vides</span>
+        <span class="tog on" id="tLabels" role="button" tabindex="0">Dimensions</span>
+        <span class="tog on" id="tCol" role="button" tabindex="0">Collisions</span>
+        <span class="tog on" id="tCoords" role="button" tabindex="0">Coordonnées</span>
+        <span class="pipeOnly"><span class="tog on" id="tCirc" role="button" tabindex="0">Cercles</span>
+        <span class="tog on" id="tSq" role="button" tabindex="0">Carrés</span>
+        <span class="tog on" id="tTrail" role="button" tabindex="0" title="Trajectoires des centres sur les dernières images">Trajectoires</span>
+        <span class="tog" id="tFree" role="button" tabindex="0" title="Places libres exactes (No-Fit Polygon) et plus grand carré insérable">Zones libres</span></span>
+      </div>
+    </div>
+    <div class="canvasWrap" id="stageWrap">
+      <canvas id="scene" aria-label="Zone de simulation interactive : molette pour zoomer, glisser pour déplacer"></canvas>
+      <div class="phaseTag" id="phaseTag">En attente</div>
+      <div class="overlay" id="coords">molette : zoom · glisser : déplacer · double-clic : centrer</div>
+      <div class="overlay r" id="zoomInfo"></div>
+    </div>
+    <div class="player" id="player" aria-label="Lecteur des étapes enregistrées">
+      <div class="timeline" id="timeline" role="tablist" aria-label="Phases du pipeline"></div>
+      <div class="scrubrow">
+        <button class="btn sm" id="bPrevF" type="button" title="Image précédente (←)">◀</button>
+        <input id="scrub" type="range" min="0" max="0" value="0" step="1" aria-label="Position dans les étapes enregistrées">
+        <button class="btn sm" id="bNextF" type="button" title="Image suivante (→)">▶</button>
+        <button class="btn sm on" id="bFollow" type="button" title="Suivre le calcul en direct">● Direct</button>
+        <output id="frameInfo" class="mono"></output>
+      </div>
+    </div>
+    <div class="controls" role="toolbar" aria-label="Contrôles de simulation">
+      <button class="btn primary" id="bPlay" type="button">▶ Démarrer</button>
+      <button class="btn" id="bStep" type="button" title="Étape suivante (S)">⏭ Étape</button>
+      <button class="btn" id="bStop" type="button" title="Terminer maintenant avec le meilleur résultat">■ Arrêter</button>
+      <button class="btn" id="bReset" type="button" title="Réinitialiser (R)">↺ Réinitialiser</button>
+      <button class="btn" id="bSeed" type="button" title="Relancer avec une autre graine aléatoire">🎲 Autre graine</button>
+      <span class="sp"></span>
+      <div class="speed"><button class="btn sm" id="bSlow" type="button" aria-label="Ralentir">«</button><input id="speed" type="range" min="0" max="7" step="1" value="2" aria-label="Vitesse de simulation"><button class="btn sm" id="bFast" type="button" aria-label="Accélérer">»</button><output id="speedOut" for="speed">×1</output></div>
+      <button class="btn" id="bFit" type="button" title="Centrer (0)">⌖</button>
+      <button class="btn" id="bFull" type="button" title="Plein écran (F)">⛶</button>
+      <span style="position:relative"><button class="btn" id="bExport" type="button" aria-haspopup="true">⬇ Exporter</button>
+        <span id="exportMenu" class="pane" hidden style="position:absolute;right:0;top:110%;z-index:20;padding:6px;display:none;min-width:170px"><button class="btn sm ghost" data-ex="png" style="width:100%;justify-content:flex-start" type="button">Image PNG</button><button class="btn sm ghost" data-ex="svg" style="width:100%;justify-content:flex-start" type="button">Vectoriel SVG</button><button class="btn sm ghost" data-ex="json" style="width:100%;justify-content:flex-start" type="button">Résultat JSON</button></span></span>
+    </div>
+    <div class="charts" aria-label="Graphiques">
+      <div class="chart"><h3>Taux de remplissage <span id="chv1"></span></h3><canvas id="chFill"></canvas></div>
+      <div class="chart"><h3>Carrés placés <span id="chv2"></span></h3><canvas id="chPlaced"></canvas></div>
+      <div class="chart"><h3>Collisions <span id="chv3"></span></h3><canvas id="chColl"></canvas></div>
+      <div class="chart"><h3>Progression de l'optimisation <span id="chv4"></span></h3><canvas id="chProg"></canvas></div>
+    </div>
+  </section>
+
+  <!-- ================= RÉSULTATS / COMPARAISON / EXPÉRIENCES ================= -->
+  <aside class="pane side" aria-label="Résultats"><h2 class="sr-only">Résultats et expériences</h2>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="stats">Résultats</button>
+      <button role="tab" aria-selected="false" data-tab="cmp">Comparaison</button>
+      <button role="tab" aria-selected="false" data-tab="exp">Expériences</button>
+    </div>
+
+    <div class="tabpane on" id="tab-stats">
+      <div class="bigfill"><b id="bigFill">0 %</b><span>de la surface du conteneur effectivement remplie (carrés valides)</span></div>
+      <div class="bar"><i id="fillBar"></i></div>
+      <div class="metrics" id="metrics"></div>
+      <div id="diagBox"></div>
+      <div id="classBox" class="legend4"></div>
+      <div id="phaseBox" hidden><h3 style="margin:14px 0 6px;font-size:13px">Statistiques par phase</h3><div class="scroll"><table class="t" id="phaseTable"><thead><tr><th>Phase</th><th>Forme</th><th>S</th><th>Taille a (W/S)</th><th>Remplissage</th><th>Itér.</th><th>Calcul</th></tr></thead><tbody></tbody></table></div><div id="phaseNotes"></div><div id="verifyBox"></div><div id="histBox"></div></div>
+      <div id="litBox"></div>
+      <details id="anglesBox" hidden style="margin-top:10px"><summary style="cursor:pointer;font-weight:600;font-size:13px">Angle de chaque carré <span id="angCount" style="color:var(--mut);font-weight:400"></span></summary><p class="note">Angle mod 90° (une rotation de 90° est une symétrie du carré). Position normalisée par le côté du conteneur.</p><div class="scroll" style="max-height:280px"><table class="t" id="angTable"><thead><tr><th>#</th><th>x/W</th><th>y/W</th><th>angle</th></tr></thead><tbody></tbody></table></div></details>
+      <div id="bestBox"></div>
+      <div class="legend4" style="margin-top:14px;border-top:1px solid var(--rule);padding-top:12px">
+        <span><b>Valide</b> : aucune collision, aucune sortie — vérifié exactement (SAT).</span>
+        <span><b>Heuristique</b> : bonne approximation, optimalité non prouvée.</span>
+        <span><b>Optimale prouvée</b> : tous les objets placés, ou conteneur plein.</span>
+        <span><b>Meilleure trouvée</b> : meilleur résultat de cette session sur cette instance.</span>
+      </div>
+    </div>
+
+    <div class="tabpane" id="tab-cmp">
+      <div id="cmpMs">
+        <p class="note">Plusieurs <b>tentatives indépendantes</b> (graines différentes) sur le même N : la meilleure est conservée. Chaque simulation terminée s’ajoute aussi à la liste.</p>
+        <div class="chips" id="msStratChips"><button class="chip on" data-s="pipeline" type="button">Pipeline 5 phases</button><button class="chip on" data-s="full" type="button">Complet</button><button class="chip" data-s="anneal" type="button">Recuit seul</button><button class="chip" data-s="circle" type="button">Circle→Square</button></div>
+        <div class="grid2" style="margin-top:8px"><label class="f">Tentatives par stratégie<select id="attCount"><option>3</option><option selected>5</option><option>10</option></select></label><label class="f">Première graine<input id="attSeed" type="number" value="1"></label></div>
+        <div class="row" style="margin-top:10px"><button class="btn primary" id="bAttempts" type="button">⚖ Lancer les tentatives</button><button class="btn" id="bAttCancel" type="button" disabled>Annuler</button><button class="btn sm" id="bAttClear" type="button">Effacer</button><button class="btn sm" id="bAttCsv" type="button" disabled>CSV</button></div>
+        <p class="note info" id="attStatus" hidden></p>
+        <div class="scroll"><table class="t" id="attTable"><thead><tr><th>Stratégie</th><th>Graine</th><th>S</th><th>a / W</th><th>Rempl.</th><th>it.</th><th>ms</th><th>Statut</th></tr></thead><tbody></tbody></table></div>
+        <div class="row" style="margin-top:8px"><button class="btn sm" id="bBackLive2" type="button" hidden>← Revenir à la simulation</button></div>
+      </div>
+      <div id="cmpLegacy" hidden>
+      <p class="note">Lance plusieurs algorithmes sur <b>exactement la même instance</b> (même graine, mêmes tailles). Clique une ligne pour visualiser la disposition.</p>
+      <div class="chips" id="cmpAlgos"></div>
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="bCompare" type="button">⚖ Lancer la comparaison</button><button class="btn" id="bCmpCancel" type="button" disabled>Annuler</button><button class="btn sm" id="bCsv" type="button" disabled>CSV</button></div>
+      <p class="note info" id="cmpStatus" hidden></p>
+      <div class="scroll"><table class="t" id="cmpTable"><thead><tr><th>Algorithme</th><th>Placés</th><th>Rempl.</th><th>Perdu</th><th>ms</th><th>Statut</th></tr></thead><tbody></tbody></table></div>
+      <div class="row" style="margin-top:8px"><button class="btn sm" id="bBackLive" type="button" hidden>← Revenir à la simulation</button></div>
+    </div>
+    </div>
+
+    <div class="tabpane" id="tab-exp">
+      <div id="expMs"><p class="note">Instances classiques : charger une carte règle N et lance la recherche. Les valeurs de référence s(n) viennent de la littérature (Friedman) ; ce programme ne les connaît que pour comparer.</p><div id="expMsList"></div></div>
+      <div id="expLegacy" hidden>
+      <p class="note">Configurations prédéfinies et exemples pédagogiques. Chaque carte charge la configuration, puis lance la comparaison ou l'étude associée.</p>
+      <div id="expList"></div>
+      <div class="card">
+        <h3>Nombre croissant de carrés</h3>
+        <p>Mesure comment le remplissage et le temps évoluent quand n augmente, à densité constante (taille du conteneur adaptée).</p>
+        <div class="grid2"><label class="f">Valeurs de n<input id="scNs" type="text" value="10, 25, 50, 100, 250, 500"></label><label class="f">Densité cible<input id="scDen" type="number" step="0.05" min="0.1" max="1" value="0.6"></label></div>
+        <div class="row" style="margin-top:8px"><button class="btn primary" id="bScale" type="button">Lancer</button><button class="btn" id="bScCancel" type="button" disabled>Annuler</button></div>
+        <div class="chart" style="margin-top:10px"><h3>Remplissage selon n</h3><canvas id="chScFill"></canvas><div class="leg" id="scLeg"></div></div>
+        <div class="chart" style="margin-top:8px"><h3>Temps de calcul (ms) selon n</h3><canvas id="chScTime"></canvas></div>
+        <div class="scroll"><table class="t" id="scTable"><thead><tr><th>n</th><th>Algo</th><th>Placés</th><th>Rempl.</th><th>ms</th></tr></thead><tbody></tbody></table></div>
+      </div>
+      <div class="card" id="studyCard">
+        <h3>Étude Circle → Square</h3>
+        <p>Compare les transformations (inscrit, circonscrit, orienté, avec recherche de rayon) sur la même instance : collisions après transformation, surface certifiée, résultat final.</p>
+        <div class="row"><button class="btn primary" id="bStudy" type="button">Lancer l'étude</button></div>
+        <div class="scroll"><table class="t" id="stTable"><thead><tr><th>Transformation</th><th>Cercles</th><th>Coll. brutes</th><th>Rempl. brut</th><th>Rempl. final</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </div>
+    </div>
+  </aside>
+</main>
+
+<nav class="mobtabs" aria-label="Sections"><button data-pane="cfg" aria-pressed="false">Config</button><button data-pane="stage" aria-pressed="true">Simulation</button><button data-pane="side" aria-pressed="false">Résultats</button></nav>
+</body>
+</html>
