@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Square Packing Lab — simulateur de packing de carrés</title>
+<meta name="description" content="Plateforme interactive et rigoureuse pour explorer le packing de carrés : 7 algorithmes, transformation Circle → Square, vérification exacte, comparaisons reproductibles. Gratuit, sans inscription.">
+<link rel="canonical" href="https://square-packing-lab.example/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b0c0f">
+<meta property="og:site_name" content="Square Packing Lab"><meta property="og:locale" content="fr_FR"><meta property="og:type" content="website">
+<meta property="og:title" content="Square Packing Lab — simulateur de packing de carrés"><meta property="og:description" content="Plateforme interactive et rigoureuse pour explorer le packing de carrés : 7 algorithmes, transformation Circle → Square, vérification exacte, comparaisons reproductibles. Gratuit, sans inscription.">
+<meta property="og:url" content="https://square-packing-lab.example/"><meta property="og:image" content="https://square-packing-lab.example/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Carrés colorés, certains inclinés, rangés dans un grand carré">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Square Packing Lab — simulateur de packing de carrés"><meta name="twitter:description" content="Plateforme interactive et rigoureuse pour explorer le packing de carrés : 7 algorithmes, transformation Circle → Square, vérification exacte, comparaisons reproductibles. Gratuit, sans inscription."><meta name="twitter:image" content="https://square-packing-lab.example/og.png">
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Square Packing Lab","applicationCategory":"EducationalApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"inLanguage":"fr"}</script>
+<script type="module" src="/src/app/landing.js"></script>
+<link rel="stylesheet" href="/src/styles/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="nav">
+  <a class="brand" href="/"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="6" width="52" height="52" fill="none" stroke="#ece7dc" stroke-width="4"/><rect x="12" y="12" width="24" height="24" fill="#ff6a3d"/><rect x="40" y="12" width="12" height="12" fill="#f0a830"/><rect x="12" y="40" width="12" height="12" fill="#6ab0ff"/><g transform="rotate(45 44 44)"><rect x="36" y="36" width="16" height="16" fill="#7bd88f"/></g></svg><span>Square Packing Lab</span></a>
+  <nav class="links" aria-label="Navigation principale"><a href="/" aria-current="page">Accueil</a><a href="/simulator.html" class="cta">Simulateur</a><a href="/parallel.html">Parallel Lab</a><a href="/algorithms.html">Algorithmes</a><a href="/learn.html">Le problème</a><a href="/about.html">À propos</a></nav>
+</header>
+<main id="main">
+<section class="hero"><div class="wrap">
+  <div>
+    <h1>Combien de carrés <em>tiennent</em> dans un carré ?</h1>
+    <p class="lead">Un laboratoire interactif pour explorer le <i>square packing</i> : sept algorithmes réellement implémentés, la transformation <b>cercles → carrés</b> avec vérification exacte des collisions, et des comparaisons reproductibles à graine identique.</p>
+    <div class="row"><a class="btn primary" href="/simulator.html">Ouvrir le simulateur →</a><a class="btn" href="/learn.html">Comprendre le problème</a></div>
+    <div class="kpis"><div><b>7</b>algorithmes</div><div><b>1 000</b>carrés fluides</div><div><b>SAT</b>validation exacte</div><div><b>0</b>compte (simulateur 100 % local)</div></div>
+  </div>
+  <canvas id="hero" width="920" height="920" aria-label="Animation : des carrés se placent dans un conteneur" role="img"></canvas>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Ce que fait la plateforme</h2>
+  <p class="sub">Chaque chiffre affiché vient du moteur et chaque disposition finale est re-vérifiée par un test de séparation exact (SAT). Rien n’est « optimal » sans preuve : le résultat est toujours classé <i>invalide</i>, <i>valide heuristique</i> ou <i>optimal prouvé</i>.</p>
+  <div class="cols3">
+    <div class="tile"><span class="tag">Configurable</span><h3>Votre instance</h3><p>De 1 à 1 000 carrés (limite réglable), tailles identiques, aléatoires ou prédéfinies, conteneur carré ou rectangulaire, rotation libre ou non, graine reproductible.</p></div>
+    <div class="tile"><span class="tag">Algorithmes</span><h3>Sept méthodes</h3><p>MaxRects, Guillotine, Skyline, recuit simulé, forces de répulsion, étagères de référence et le pipeline Circle → Square.</p></div>
+    <div class="tile"><span class="tag">Circle → Square</span><h3>Voir la transformation</h3><p>Disques → carrés inscrits, circonscrits ou d’orientation optimisée, collisions détectées exactement, puis ré-optimisation.</p></div>
+    <div class="tile"><span class="tag">Visualisation</span><h3>Zoom, pan, plein écran</h3><p>Canvas fluide avec grille adaptative, coordonnées, espaces perdus, collisions en rouge, animation de placement et de morphing.</p></div>
+    <div class="tile"><span class="tag">Statistiques</span><h3>Mesures réelles</h3><p>Placés, remplissage, perte, collisions, itérations, temps de calcul, et quatre graphiques d’évolution.</p></div>
+    <div class="tile"><span class="tag">Comparaison</span><h3>Même graine, mêmes données</h3><p>Tableau comparatif, aperçu de chaque disposition, étude de passage à l’échelle, export CSV / PNG / SVG / JSON.</p></div>
+  </div>
+</div></section>
+
+<section class="blk"><div class="wrap">
+  <h2>Un résultat honnête</h2>
+  <div class="cols2">
+    <div class="tile"><h3>Ce qui est prouvé</h3><p>La validité d’une disposition (aucun chevauchement, aucune sortie) est vérifiée par SAT, avec toutes les paires proches. Les optimums prouvés ne sont annoncés que lorsqu’une borne triviale est atteinte (tout est placé, ou conteneur plein), ou pour les valeurs <code>s(n)</code> de la littérature.</p></div>
+    <div class="tile"><h3>Ce qui ne l’est pas</h3><p>Les algorithmes sont des heuristiques. Les approches à base de cercles ont une densité limitée (≈ 57,7 % par la route « inscrite ») ; la plateforme le mesure au lieu de le cacher.</p></div>
+  </div>
+  <p style="margin-top:24px"><a class="btn primary" href="/simulator.html">Lancer une simulation</a></p>
+</div></section></main>
+<footer class="footer"><div class="wrap"><span>Square Packing Lab · licence MIT · aucun cookie, aucun traceur · simulateur 100 % local ; Parallel Lab : calcul sur le serveur que vous configurez.</span><span><a href="/simulator.html">Simulateur</a> · <a href="/algorithms.html">Algorithmes</a> · <a href="/learn.html">Le problème</a> · <a href="/about.html">À propos</a></span></div></footer>
+</body>
+</html>
