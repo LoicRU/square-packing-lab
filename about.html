@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>À propos — Square Packing Lab</title>
+<meta name="description" content="Objectif, politique de rigueur mathématique, architecture technique, limites connues, licence et confidentialité de Square Packing Lab.">
+<link rel="canonical" href="https://square-packing-lab.example/about.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b0c0f">
+<meta property="og:site_name" content="Square Packing Lab"><meta property="og:locale" content="fr_FR"><meta property="og:type" content="website">
+<meta property="og:title" content="À propos — Square Packing Lab"><meta property="og:description" content="Objectif, politique de rigueur mathématique, architecture technique, limites connues, licence et confidentialité de Square Packing Lab.">
+<meta property="og:url" content="https://square-packing-lab.example/about.html"><meta property="og:image" content="https://square-packing-lab.example/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Carrés colorés, certains inclinés, rangés dans un grand carré">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="À propos — Square Packing Lab"><meta name="twitter:description" content="Objectif, politique de rigueur mathématique, architecture technique, limites connues, licence et confidentialité de Square Packing Lab."><meta name="twitter:image" content="https://square-packing-lab.example/og.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "À propos — Square Packing Lab", "inLanguage": "fr", "url": "https://square-packing-lab.example/about.html", "isPartOf": {"@type": "WebSite", "name": "Square Packing Lab", "url": "https://square-packing-lab.example/"}}</script>
+<link rel="stylesheet" href="/src/styles/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="nav">
+  <a class="brand" href="/"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="6" width="52" height="52" fill="none" stroke="#ece7dc" stroke-width="4"/><rect x="12" y="12" width="24" height="24" fill="#ff6a3d"/><rect x="40" y="12" width="12" height="12" fill="#f0a830"/><rect x="12" y="40" width="12" height="12" fill="#6ab0ff"/><g transform="rotate(45 44 44)"><rect x="36" y="36" width="16" height="16" fill="#7bd88f"/></g></svg><span>Square Packing Lab</span></a>
+  <nav class="links" aria-label="Navigation principale"><a href="/">Accueil</a><a href="/simulator.html" class="cta">Simulateur</a><a href="/parallel.html">Parallel Lab</a><a href="/algorithms.html">Algorithmes</a><a href="/learn.html">Le problème</a><a href="/about.html" aria-current="page">À propos</a></nav>
+</header>
+<main id="main">
+<div class="wrap doc">
+<h1>À propos</h1>
+<p class="lead">Square Packing Lab est un outil d’exploration et d’enseignement : essayer, comparer et comprendre des méthodes de packing de carrés, avec des résultats vérifiables.</p>
+<h2>Politique de rigueur</h2>
+<p>Tout résultat affiché est recalculé par un validateur exact indépendant des algorithmes. Aucune solution n’est qualifiée d’« optimale » sans preuve ; les valeurs de la littérature sont distinguées en « prouvées » et « meilleures connues ». Les graphiques et statistiques sont alimentés par les données réelles du moteur, jamais par des valeurs inventées.</p>
+<h2>Architecture</h2>
+<table class="t"><tbody>
+<tr><td><code>src/engine</code></td><td>Mathématiques pures (géométrie SAT, validation, configuration, statistiques, classification) — sans DOM, sans framework.</td></tr>
+<tr><td><code>src/algorithms</code></td><td>Les sept solveurs derrière une interface commune (<code>step()</code>, <code>view()</code>, <code>result()</code>).</td></tr>
+<tr><td><code>src/worker</code></td><td>Web Worker : exécute la simulation hors du thread de l’interface ; la vitesse affichée est indépendante de la vitesse de calcul.</td></tr>
+<tr><td><code>src/render</code></td><td>Canvas 2D (rendu à la demande) et graphiques.</td></tr>
+<tr><td><code>src/app</code></td><td>Contrôleurs d’interface : formulaire, contrôles, statistiques, comparaison, expériences.</td></tr>
+</tbody></table>
+<p>Stack : JavaScript ES modules, Vite (site statique), Vitest. Aucune dépendance d’exécution, aucun backend, aucune API payante.</p>
+<h2>Limites connues</h2>
+<p>Les méthodes constructives n’explorent pas les inclinaisons libres ; les méthodes continues sont heuristiques et limitées en densité ; au-delà de quelques milliers de carrés, l’interface peut devenir lente selon l’appareil (limite réglable). Les temps de calcul affichés dépendent de votre machine.</p>
+<h2>Confidentialité</h2>
+<p>Le simulateur classique calcule tout dans votre navigateur : aucune donnée n’est collectée ni envoyée, et vos configurations restent dans le stockage local. Le <a href="/parallel.html">Parallel Lab</a> est différent par nature : vos paramètres de recherche et les solutions trouvées sont envoyés au serveur de calcul que vous lancez ou configurez vous-même (jamais à un tiers par défaut). Pas de cookie, pas de traceur.</p>
+<h2>Licence</h2>
+<p>Code publié sous licence MIT. Les références scientifiques appartiennent à leurs auteurs.</p>
+</div></main>
+<footer class="footer"><div class="wrap"><span>Square Packing Lab · licence MIT · aucun cookie, aucun traceur · simulateur 100 % local ; Parallel Lab : calcul sur le serveur que vous configurez.</span><span><a href="/simulator.html">Simulateur</a> · <a href="/algorithms.html">Algorithmes</a> · <a href="/learn.html">Le problème</a> · <a href="/about.html">À propos</a></span></div></footer>
+</body>
+</html>
