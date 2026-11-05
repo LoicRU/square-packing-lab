@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parallel Packing Lab — Square Packing Lab</title>
+<meta name="description" content="Recherche parallèle persistante de dispositions de Square Packing : plusieurs simulations, Elite Pool partagé, évolution et stratégies adaptatives.">
+<link rel="canonical" href="https://square-packing-lab.example/parallel.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b0c0f">
+<meta name="robots" content="noindex,follow">
+<meta property="og:site_name" content="Square Packing Lab"><meta property="og:locale" content="fr_FR"><meta property="og:type" content="website">
+<meta property="og:title" content="Parallel Packing Lab — Square Packing Lab"><meta property="og:description" content="Recherche parallèle persistante de dispositions de Square Packing : plusieurs simulations, Elite Pool partagé, évolution et stratégies adaptatives.">
+<meta property="og:url" content="https://square-packing-lab.example/parallel.html"><meta property="og:image" content="https://square-packing-lab.example/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Carrés colorés, certains inclinés, rangés dans un grand carré">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Parallel Packing Lab — Square Packing Lab"><meta name="twitter:description" content="Recherche parallèle persistante de dispositions de Square Packing : plusieurs simulations, Elite Pool partagé, évolution et stratégies adaptatives."><meta name="twitter:image" content="https://square-packing-lab.example/og.png">
+
+<script type="module" src="/src/app/parallel.js"></script>
+<link rel="stylesheet" href="/src/styles/styles.css">
+</head>
+<body>
+<a class="skip" href="#plab">Aller au contenu</a>
+<header class="nav">
+  <a class="brand" href="/"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="6" width="52" height="52" fill="none" stroke="#ece7dc" stroke-width="4"/><rect x="12" y="12" width="24" height="24" fill="#ff6a3d"/><rect x="40" y="12" width="12" height="12" fill="#f0a830"/><rect x="12" y="40" width="12" height="12" fill="#6ab0ff"/><g transform="rotate(45 44 44)"><rect x="36" y="36" width="16" height="16" fill="#7bd88f"/></g></svg><span>Square Packing Lab</span></a>
+  <nav class="links" aria-label="Navigation principale"><a href="/">Accueil</a><a href="/simulator.html">Simulateur</a><a href="/parallel.html" aria-current="page" class="cta">Parallel Lab</a><a href="/algorithms.html">Algorithmes</a><a href="/learn.html">Le problème</a><a href="/about.html">À propos</a></nav>
+</header>
+<div class="errbanner" id="errBanner" role="alert"></div>
+<main class="plab" id="plab">
+  <h1 class="sr-only">Parallel Packing Lab — recherche parallèle de packings de carrés</h1>
+  <aside class="pane cfg" aria-label="Nouvelle recherche">
+    <h2>Recherche parallèle</h2>
+    <div class="body" style="padding:12px 14px;display:grid;gap:12px">
+      <p class="note info" id="srvStatus" role="status">Connexion au serveur…</p>
+      <label class="f" id="tokenBox" hidden>Jeton d'accès (PPL_TOKEN)<input id="token" type="password" autocomplete="off" placeholder="requis par ce serveur"></label>
+      <label class="f">Nombre de carrés N
+        <div class="row" style="flex-wrap:nowrap;display:flex;gap:8px"><input id="pN" type="number" min="1" max="400" step="1" value="17" style="width:92px"><input id="pNr" type="range" min="1" max="200" value="17" aria-label="N (curseur)"></div>
+      </label>
+      <div class="chips" id="nChips"></div>
+      <label class="f">Simulations souhaitées
+        <input id="pSims" type="number" min="1" max="128" step="1" value="8">
+      </label>
+      <div class="chips" id="simChips"></div>
+      <div class="grid2">
+        <label class="f">Workers max (0 = auto)<input id="pMax" type="number" min="0" max="64" value="0"></label>
+        <label class="f">Graine<input id="pSeed" type="number" value="42"></label>
+      </div>
+      <label class="f">Mode<select id="pMode"><option value="evolutionary">Évolutif (Elite Pool partagé)</option><option value="independent">Recherches indépendantes</option></select></label>
+      <fieldset class="f" style="border:0;padding:0;margin:0"><legend style="font-size:12px;color:var(--mut);margin-bottom:4px">Stratégies de départ (exploration)</legend>
+        <label style="display:block;font-size:13px"><input type="checkbox" class="pStrat" value="direct" checked> Square Packing direct</label>
+        <label style="display:block;font-size:13px"><input type="checkbox" class="pStrat" value="anneal" checked> Multi-départ (recuit)</label>
+        <label style="display:block;font-size:13px"><input type="checkbox" class="pStrat" value="circle" checked> Circle → Square (expérimental)</label>
+        <label style="display:block;font-size:13px"><input type="checkbox" class="pStrat" value="pattern" checked> Motifs à bande inclinée</label>
+        <label style="display:block;font-size:13px"><input type="checkbox" class="pStrat" value="hop" checked> Secousse + affinage SLP (transfert N±1)</label></fieldset>
+      <details><summary style="cursor:pointer;font-size:13px">Paramètres avancés</summary><div class="grid2" style="margin-top:8px">
+        <label class="f">Durée d'un cycle (ms, 0 = auto)<input id="pCycle" type="number" min="0" step="500" value="0"></label>
+        <label class="f">Effort du recuit (2–12)<input id="pEffort" type="number" min="2" max="12" value="6"></label></div>
+        <p class="note">Durée de recherche illimitée : elle ne s'arrête que sur demande ou limite technique.</p></details>
+      <button class="btn primary" id="bCreate" type="button">▶ Lancer la recherche</button>
+      <button class="btn warn" id="bStopAll" type="button">■ Tout arrêter</button>
+      <details class="danger"><summary>Zone dangereuse</summary><div class="body"><p class="hint">Supprime définitivement toutes les recherches et leurs solutions (les exports JSON ne sont pas touchés).</p>
+        <button class="btn destroy" id="bDelAll" type="button">🗑 Tout supprimer</button></div></details>
+      <hr style="border:0;border-top:1px solid var(--rule)">
+      <label class="f">Recherches enregistrées<select id="pList"><option value="">—</option></select></label>
+      <div class="row" style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" id="bOpen" type="button">Ouvrir</button><button class="btn sm" id="bDelete" type="button">Supprimer</button></div>
+      <div class="metrics" id="srvRes"></div>
+    </div>
+  </aside>
+  <section class="pane" aria-label="Laboratoire">
+    <div class="tabs" role="tablist" id="ptabs"><button role="tab" aria-selected="true" data-tab="dash">Dashboard</button><button role="tab" aria-selected="false" data-tab="viz">Visualisation</button><button role="tab" aria-selected="false" data-tab="rank">Classement</button><button role="tab" aria-selected="false" data-tab="hist">Historique</button></div>
+    <div class="banner warn" id="connBanner" hidden>Connexion au serveur perdue — reconnexion automatique…</div>
+
+    <div class="tabpane on" id="tab-dash">
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="badge" id="pStatus">Aucune recherche</span><span class="mono" id="pId" style="color:var(--mut);font-size:12px"></span><span style="flex:1"></span>
+        <button class="btn" id="bStart" type="button" disabled>▶ Démarrer</button><button class="btn" id="bPause" type="button" disabled>❚❚ Pause</button><button class="btn" id="bResume" type="button" disabled>▶ Reprendre</button><button class="btn" id="bStop" type="button" disabled>■ Arrêter</button></div>
+      <div class="metrics" id="pMetrics" style="margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))"></div>
+      <p class="note" id="govNote"></p>
+      <details style="margin-top:8px"><summary style="cursor:pointer;font-size:13px">Modifier les paramètres en cours de recherche</summary><div class="grid2" style="margin-top:8px;max-width:560px">
+        <label class="f">Workers max (0 = auto)<input id="mMax" type="number" min="0" max="64"></label><label class="f">Simulations (augmenter seulement)<input id="mSims" type="number" min="1" max="128"></label>
+        <label class="f">Durée d'un cycle (ms)<input id="mCycle" type="number" min="0" step="500"></label><label class="f">Mode<select id="mMode"><option value="evolutionary">Évolutif</option><option value="independent">Indépendant</option></select></label></div>
+        <button class="btn sm" id="bPatch" type="button" style="margin-top:8px">Appliquer</button></details>
+      <h3 class="h4">Répartition adaptative des recherches (bandit)</h3>
+      <div class="scroll"><table class="t" id="banditTable"><thead><tr><th>Origine / stratégie</th><th>Part actuelle</th><th>Tirages</th><th>Récompense moy.</th><th>Records</th><th>Améliorations</th><th>Acceptées</th><th>Temps cumulé</th></tr></thead><tbody></tbody></table></div>
+      <p class="note">Les proportions de départ (30 % mutations du record, 30 % élites diversifiées, 20 % recombinaisons, 20 % nouvelles configurations) évoluent selon les résultats réellement obtenus ; chaque origine garde un plancher d'exploration.</p>
+      <div id="honest" class="note"></div>
+    </div>
+
+    <div class="tabpane" id="tab-viz">
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><div class="chips"><button class="chip on" id="vMosaic" type="button">Mosaïque</button><button class="chip" id="vDetail" type="button">Vue détaillée</button></div><span style="flex:1"></span>
+        <label style="font-size:13px"><input type="checkbox" id="vAnim" checked> Animation</label>
+        <label style="font-size:13px">Vitesse d'affichage <select id="vSpeed"><option value="4">×0,25</option><option value="2">×0,5</option><option value="1" selected>×1</option><option value="0.5">×2</option><option value="0.25">×4</option></select></label>
+        <button class="btn sm" id="vFreeze" type="button">❚❚ Figer l'affichage</button></div>
+      <p class="note">Les aperçus sont des états réels des workers (≈ 1 par 1,5 s) ; la vitesse d'affichage ne ralentit jamais le calcul.</p>
+      <div id="mosaic" class="mosaic"></div>
+      <div id="detail" hidden>
+        <div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn sm" id="dBack" type="button">← Mosaïque</button><select id="dSlot"></select><span class="badge" id="dState"></span><label style="font-size:13px"><input type="checkbox" id="dLabels" checked> Angles</label><label style="font-size:13px"><input type="checkbox" id="dFree"> Zones libres (NFP)</label></div>
+        <div class="detailgrid"><div><canvas id="dCanvas" class="bigcanvas"></canvas><p class="note mono" id="dInfo"></p></div>
+        <div><h3 class="h4" style="margin-top:0">Évolution du meilleur résultat de cette simulation</h3><div class="chartbox"><canvas id="dChart"></canvas></div><h3 class="h4">Découvertes</h3><ol class="hist" id="dHist"></ol></div></div>
+      </div>
+    </div>
+
+    <div class="tabpane" id="tab-rank">
+      <details id="recBox" open><summary><b>Records par nombre de carrés</b> (toutes les recherches)</summary>
+        <div class="scroll"><table class="t" id="recTable"><thead><tr><th data-k="n">N carrés ▲</th><th data-k="S">S (côtés)</th><th data-k="size">Taille s (L=1)</th><th data-k="fill">Remplissage</th><th data-k="searches">Recherches</th><th></th></tr></thead><tbody></tbody></table></div>
+        <p class="note">Meilleure solution revalidée par l'autorité pour chaque N. Cliquer l'en-tête pour trier ; « Ouvrir » charge la recherche d'origine. Valide ≠ optimal.</p></details>
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;align-items:end">
+        <label class="f">Trier par<select id="fSort"><option value="S">Plus grande dimension (meilleur)</option><option value="fill">Meilleur remplissage</option><option value="date">Date de découverte</option><option value="nov">Diversité géométrique</option></select></label>
+        <label class="f">Catégorie<select id="fCat"><option value="">toutes</option><option value="record">record</option><option value="elite">élites</option><option value="diverse">diversifiées</option><option value="historical">historiques</option></select></label>
+        <label class="f">Stratégie<select id="fStrat"><option value="">toutes</option></select></label>
+        <label class="f">Worker d'origine<select id="fSlot"><option value="">tous</option></select></label>
+        <span style="flex:1"></span><button class="btn sm" id="bCompare" type="button" disabled>Comparer la sélection</button><button class="btn sm" id="bExportAll" type="button">Exporter tout (JSON)</button><label class="btn sm" style="cursor:pointer">Importer<input id="fImport" type="file" accept="application/json" hidden></label></div>
+      <div class="scroll"><table class="t" id="rankTable"><thead><tr><th>#</th><th>Cat.</th><th>S (côtés)</th><th>Taille s (L=1)</th><th>Remplissage</th><th>Divers.</th><th>Stratégie</th><th>Worker</th><th>Date</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
+      <p class="note">Aucune solution invalide n'apparaît ici : l'autorité de validation (SAT + intersection polygonale) est la seule porte d'entrée. « Valide » ne signifie pas « optimal » : aucune preuve d'optimalité n'est affirmée.</p>
+      <div id="compare" hidden><h3 class="h4">Comparaison</h3><div id="cmpGrid" class="cmpgrid"></div><div id="cmpInfo"></div></div>
+      <div id="viewer" hidden><h3 class="h4">Consultation</h3><div class="detailgrid"><canvas id="vCanvas" class="bigcanvas"></canvas><div id="vInfo"></div></div></div>
+    </div>
+
+    <div class="tabpane" id="tab-hist">
+      <div class="grid2" style="max-width:none"><div><h3 class="h4" style="margin-top:0">Évolution du record (côté commun S)</h3><div class="chartbox"><canvas id="hRecord"></canvas></div></div>
+      <div><h3 class="h4" style="margin-top:0">Évolution du remplissage (%)</h3><div class="chartbox"><canvas id="hFill"></canvas></div></div>
+      <div><h3 class="h4">Améliorations du record par période</h3><div class="chartbox"><canvas id="hPeriod"></canvas></div></div>
+      <div><h3 class="h4">Améliorations par stratégie</h3><div class="chartbox"><canvas id="hStrat"></canvas></div></div></div>
+      <div id="histStats" class="metrics" style="margin-top:12px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))"></div>
+    </div>
+  </section>
+</main>
+<footer class="note" style="max-width:1500px;margin:0 auto;padding:0 16px 24px">Les calculs tournent sur le serveur (worker_threads) et continuent après fermeture du navigateur. Chaque solution est re-vérifiée par une autorité de validation indépendante. Aucune optimalité n'est prouvée.</footer>
+</body>
+</html>
