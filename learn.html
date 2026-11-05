@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Le problème du Square Packing — théorie, valeurs connues et limites de Circle → Square</title>
+<meta name="description" content="Qu’est-ce que le packing de carrés dans un carré ? Valeurs connues s(n) (prouvées ou meilleures connues), résultats asymptotiques, et pourquoi passer par des cercles ne suffit pas.">
+<link rel="canonical" href="https://square-packing-lab.example/learn.html">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0b0c0f">
+<meta property="og:site_name" content="Square Packing Lab"><meta property="og:locale" content="fr_FR"><meta property="og:type" content="website">
+<meta property="og:title" content="Le problème du Square Packing — théorie, valeurs connues et limites de Circle → Square"><meta property="og:description" content="Qu’est-ce que le packing de carrés dans un carré ? Valeurs connues s(n) (prouvées ou meilleures connues), résultats asymptotiques, et pourquoi passer par des cercles ne suffit pas.">
+<meta property="og:url" content="https://square-packing-lab.example/learn.html"><meta property="og:image" content="https://square-packing-lab.example/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Carrés colorés, certains inclinés, rangés dans un grand carré">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Le problème du Square Packing — théorie, valeurs connues et limites de Circle → Square"><meta name="twitter:description" content="Qu’est-ce que le packing de carrés dans un carré ? Valeurs connues s(n) (prouvées ou meilleures connues), résultats asymptotiques, et pourquoi passer par des cercles ne suffit pas."><meta name="twitter:image" content="https://square-packing-lab.example/og.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Le problème du Square Packing — théorie, valeurs connues et limites de Circle → Square", "inLanguage": "fr", "url": "https://square-packing-lab.example/learn.html", "isPartOf": {"@type": "WebSite", "name": "Square Packing Lab", "url": "https://square-packing-lab.example/"}}</script>
+<script type="module" src="/src/app/learn.js"></script>
+<link rel="stylesheet" href="/src/styles/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<header class="nav">
+  <a class="brand" href="/"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="6" y="6" width="52" height="52" fill="none" stroke="#ece7dc" stroke-width="4"/><rect x="12" y="12" width="24" height="24" fill="#ff6a3d"/><rect x="40" y="12" width="12" height="12" fill="#f0a830"/><rect x="12" y="40" width="12" height="12" fill="#6ab0ff"/><g transform="rotate(45 44 44)"><rect x="36" y="36" width="16" height="16" fill="#7bd88f"/></g></svg><span>Square Packing Lab</span></a>
+  <nav class="links" aria-label="Navigation principale"><a href="/">Accueil</a><a href="/simulator.html" class="cta">Simulateur</a><a href="/parallel.html">Parallel Lab</a><a href="/algorithms.html">Algorithmes</a><a href="/learn.html" aria-current="page">Le problème</a><a href="/about.html">À propos</a></nav>
+</header>
+<main id="main">
+<div class="wrap doc">
+<h1>Le problème du Square Packing</h1>
+<p class="lead">Quel est le plus petit carré <code>s(n)</code> qui contient <i>n</i> carrés unité sans chevauchement ? Ou, de façon équivalente, combien de petits carrés rentrent dans un grand carré donné ?</p>
+<div class="toc"><a class="pill" href="#def">Définition</a><a class="pill" href="#table">Valeurs connues</a><a class="pill" href="#asympt">Grands n</a><a class="pill" href="#c2s">Cercles → carrés</a><a class="pill" href="#status">Statuts de résultat</a><a class="pill" href="#refs">Références</a></div>
+
+<h2 id="def">Définition et premiers cas</h2>
+<p>Quand <i>n</i> est un carré parfait <code>k²</code>, la grille <code>k × k</code> donne <code>s(n) = k</code> et on sait que c’est optimal. Pour <code>n = k² − 1</code> et <code>k² − 2</code>, on sait aussi (preuve) qu’on ne peut pas faire mieux que <code>k</code>. Les cas intéressants sont les autres : par exemple <code>s(5) = 2 + 1/√2 ≈ 2,7071</code>, obtenu en <b>inclinant</b> un carré à 45° au centre.</p>
+<div class="eq">carré incliné de côté a, angle θ : demi-étendue h = (a/2)(|cos θ| + |sin θ|)  → h = a/√2 à 45°</div>
+<p>Dans cette plateforme, la généralisation est autorisée : tailles différentes, conteneur rectangulaire, objectif « maximiser la surface placée » quand tout ne tient pas.</p>
+
+<h2 id="table">Valeurs connues de s(n)</h2>
+<p class="note info">Seules les valeurs marquées « prouvé » sont des optimums démontrés. Les autres sont les <b>meilleures configurations connues</b> (Friedman) ; une meilleure n’est pas exclue.</p>
+<div class="scroll"><table class="t" id="knownTable"><thead><tr><th>n</th><th>s(n)</th><th>Statut</th></tr></thead><tbody></tbody></table></div>
+
+<h2 id="asympt">Grands conteneurs</h2>
+<p>L’espace perdu pour <i>n</i> grand est étudié depuis Erdős et Graham (1975) : on peut le rendre <b>sous-linéaire</b> en le côté du conteneur, au prix de dispositions complexes à carrés légèrement inclinés ; les exposants exacts et les constantes sont l’objet de travaux de recherche et ne sont pas tous établis. Retenez surtout qu’à grand n les <i>grilles bien choisies plus quelques bandes ajustées</i> battent largement les heuristiques génériques.</p>
+
+<h2 id="c2s">Pourquoi passer par des cercles ne suffit pas</h2>
+<p>L’idée « empiler des disques (problème bien connu), puis les transformer en carrés » est séduisante, mais :</p>
+<p><b>Route inscrite</b> (carré dans le disque, côté r√2) : aucun chevauchement possible, mais l’aire d’un carré inscrit vaut <code>2/π ≈ 63,7 %</code> de celle du disque, et la meilleure densité de disques dans le plan est <code>π/(2√3) ≈ 90,69 %</code>. Densité maximale atteignable par cette route : <code>≈ 57,7 %</code>, très loin des quasi-100 % de la littérature pour les carrés.</p>
+<p><b>Route circonscrite</b> (carré de côté 2r) : la densité nominale grimpe à <code>(4/π)·90,69 ≈ 115 %</code> — c’est-à-dire impossible : des collisions apparaissent forcément, que le simulateur compte et répare.</p>
+<p>La plateforme implémente donc le pipeline complet <i>et mesure</i> son résultat face aux méthodes constructives, au lieu de le présumer meilleur.</p>
+
+<h2 id="status">Statuts de résultat</h2>
+<table class="t"><tbody>
+<tr><td><b>Invalide</b></td><td>Au moins une collision ou sortie du conteneur. Jamais présenté comme une solution.</td></tr>
+<tr><td><b>Valide · heuristique</b></td><td>Disposition vérifiée exactement, optimalité non prouvée.</td></tr>
+<tr><td><b>Optimale prouvée</b></td><td>Uniquement si tous les carrés sont placés, ou si le conteneur est rempli à 100 % (bornes de surface).</td></tr>
+<tr><td><b>Meilleure trouvée</b></td><td>Meilleur résultat obtenu dans votre session pour cette instance — pas un optimum.</td></tr>
+</tbody></table>
+<p>La vérification repose sur le <b>théorème de l’axe séparateur</b> : deux carrés convexes sont disjoints si et seulement si l’un des 4 axes (2 par carré) les sépare. La validation est exacte à une tolérance numérique explicite de 10⁻⁹.</p>
+
+<h2 id="refs">Références</h2>
+<ul>
+<li>E. Friedman, <i>Packing Unit Squares in Squares: A Survey and New Results</i>, Electronic Journal of Combinatorics, Dynamic Survey DS7.</li>
+<li>P. Erdős, R. L. Graham, « On packing squares with equal squares », J. Combin. Theory Ser. A 19 (1975).</li>
+<li>F. Chung, R. Graham, « Efficient packings of unit squares in a large square », Discrete &amp; Computational Geometry (2020).</li>
+<li>J. Jylänki, <i>A Thousand Ways to Pack the Bin</i> (2010) — MaxRects, Guillotine, Skyline.</li>
+<li>Article « Square packing », Wikipédia.</li>
+</ul>
+<p class="note">Les valeurs et énoncés ci-dessus doivent être confrontés aux sources originales avant toute utilisation académique.</p>
+</div></main>
+<footer class="footer"><div class="wrap"><span>Square Packing Lab · licence MIT · aucun cookie, aucun traceur · simulateur 100 % local ; Parallel Lab : calcul sur le serveur que vous configurez.</span><span><a href="/simulator.html">Simulateur</a> · <a href="/algorithms.html">Algorithmes</a> · <a href="/learn.html">Le problème</a> · <a href="/about.html">À propos</a></span></div></footer>
+</body>
+</html>
