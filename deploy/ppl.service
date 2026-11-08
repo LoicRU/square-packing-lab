@@ -1,0 +1,16 @@
+[Unit]
+Description=Parallel Packing Lab
+After=network.target
+
+[Service]
+User=ppl
+WorkingDirectory=/opt/square-packing-lab
+EnvironmentFile=/etc/ppl.env
+ExecStart=/usr/bin/node server/index.js
+Restart=always
+RestartSec=3
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
