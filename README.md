@@ -18,6 +18,23 @@ Plateforme web interactive (statique, sans backend) pour simuler le **Square Pac
 - Parallel Packing Lab : recherche parallèle persistante côté serveur (Elite Pool, bandits, reprise après redémarrage)
 - 100 % statique côté simulateur : aucun backend requis, aucun tracking
 
+## Sommaire
+
+- [Fonctionnalités](#fonctionnalités)
+- [Aperçu](#aperçu)
+- [Démarrage](#démarrage)
+- [Problème principal : taille maximale](#problème-principal--taille-maximale)
+- [Pipeline Circle → Square](#pipeline-circle--square-5-phases-observables)
+- [Pages](#pages)
+- [Algorithmes](#algorithmes)
+- [Rigueur](#rigueur)
+- [Structure](#structure)
+- [FAQ](#faq)
+- [Statut et limites connues](#statut-et-limites-connues)
+- [Contribuer](#contribuer)
+- [Licence](#licence)
+- [Parallel Packing Lab](#parallel-packing-lab)
+
 ## Démarrage
 
 ```bash
