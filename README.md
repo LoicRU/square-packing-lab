@@ -80,6 +80,24 @@ docs            ARCHITECTURE, MATHS, DEPLOY, RESEARCH
 
 Déploiement : voir `docs/DEPLOY.md`.
 
+## FAQ
+
+**Le résultat affiché est-il optimal ?**
+Non, sauf mention explicite « optimale prouvée » (N = k², ou valeur s(n) démontrée dans la littérature). Sinon c'est la meilleure solution heuristique trouvée dans la session.
+
+**Mes données sont-elles envoyées quelque part ?**
+Non pour le simulateur : tout tourne côté client, sans backend ni tracking. Le Parallel Packing Lab est une brique serveur optionnelle et séparée.
+
+**Pourquoi deux exécutions donnent-elles des résultats différents ?**
+Les méthodes stochastiques (recuit, forces) dépendent de la graine aléatoire. Le mode « Comparaison » fixe la graine pour des résultats reproductibles.
+
+**Combien de carrés le simulateur supporte-t-il ?**
+Testé jusqu'à 1000 carrés (voir `npm run bench`) ; l'interface peut ralentir au-delà de quelques milliers selon l'appareil.
+
+## Statut et limites connues
+
+Les méthodes constructives n'explorent pas les inclinaisons libres ; les méthodes continues sont heuristiques et limitées en densité ; au-delà de quelques milliers de carrés, l'interface peut ralentir selon l'appareil. Les temps de calcul affichés dépendent de votre machine. Détails : [`/about.html`](about.html).
+
 ## Contribuer
 
 Les contributions sont bienvenues : ouvrez une issue pour un bug ou une idée, ou une pull request (merci de lancer `npm test` et `npm run build` avant). Voir `docs/ARCHITECTURE.md` pour s'orienter dans le code.
