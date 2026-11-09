@@ -1,8 +1,22 @@
 # Square Packing Lab
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E%3D22.5-brightgreen)](package.json)
+[![Tests](https://img.shields.io/badge/tests-156%20passing-brightgreen)](tests)
+
 > Interactive square packing simulator — 7 algorithms, Circle → Square transformation, exact SAT verification, reproducible benchmarks. 100% client-side, no backend, no tracking.
 
 Plateforme web interactive (statique, sans backend) pour simuler le **Square Packing Problem** : placer le maximum de petits carrés dans un conteneur, avec 7 algorithmes, la transformation **Circle → Square**, une vérification exacte (SAT) et des comparaisons reproductibles.
+
+## Fonctionnalités
+
+- 7 algorithmes de packing réellement implémentés (MaxRects, Guillotine, Skyline, recuit simulé, répulsion/forces, étagères, Circle → Square), exécutés dans un Web Worker
+- Pipeline Circle → Square en 5 phases observables, avec lecteur, retour arrière et trajectoires
+- Vérification géométrique exacte (SAT) de chaque disposition : aucun résultat affiché n'est pris pour argent comptant sans contrôle indépendant
+- Mode comparaison reproductible entre algorithmes, à graine fixée
+- Export PNG / SVG / JSON du résultat courant
+- Parallel Packing Lab : recherche parallèle persistante côté serveur (Elite Pool, bandits, reprise après redémarrage)
+- 100 % statique côté simulateur : aucun backend requis, aucun tracking
 
 ## Démarrage
 
