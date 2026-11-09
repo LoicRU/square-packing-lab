@@ -35,3 +35,21 @@ Stratégie par défaut : génération, Circle Packing, transformation, Square Pa
 ## Algorithmes
 
 Circle → Square · MaxRects · Guillotine · Skyline · Recuit simulé · Répulsion/forces · Étagères (référence).
+
+## Rigueur
+
+Une disposition est **valide** si aucune paire n'a de pénétration > 1e-9 (SAT exact, grille spatiale pour toutes les paires proches) et aucun carré ne dépasse. Statuts : *invalide* / *valide · heuristique* / *optimale prouvée* (seulement si tout est placé ou conteneur plein) ; « meilleure trouvée » = meilleur résultat de la session. Voir `docs/MATHS.md`.
+
+## Structure
+
+```
+src/engine      maths pures (géométrie SAT, validation, config, stats, classification, export)
+src/algorithms  7 solveurs + registre
+src/worker      Web Worker (simulation hors thread UI)
+src/render      Canvas 2D + graphiques
+src/app         contrôleurs UI (simulateur, landing, learn)
+tests           vitest
+docs            ARCHITECTURE, MATHS, DEPLOY, RESEARCH
+```
+
+Déploiement : voir `docs/DEPLOY.md`.
