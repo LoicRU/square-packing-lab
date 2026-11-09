@@ -21,3 +21,17 @@ N carrés **identiques**, rotation libre 0–90°, tous placés : le simulateur 
 
 ## Pipeline Circle → Square (5 phases observables)
 Stratégie par défaut : génération, Circle Packing, transformation, Square Packing, optimisation finale — lecteur avec timeline, retour arrière, trajectoires, zones libres (No-Fit Polygon), statistiques par phase, vérification indépendante. Détails et mesures : [docs/PIPELINE.md](docs/PIPELINE.md). Banc d'essai : `node scripts/bench-pipeline.mjs`.
+
+## Pages
+
+| Page | Rôle |
+|---|---|
+| `/` | Présentation, animation du moteur |
+| `/simulator.html` | Simulateur complet |
+| `/algorithms.html` | Principe, complexité, limites des 7 algorithmes |
+| `/learn.html` | Le problème, valeurs connues s(n), limites de Circle → Square |
+| `/about.html` | Rigueur, architecture, confidentialité, licence |
+
+## Algorithmes
+
+Circle → Square · MaxRects · Guillotine · Skyline · Recuit simulé · Répulsion/forces · Étagères (référence).
