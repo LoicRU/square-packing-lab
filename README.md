@@ -54,6 +54,14 @@ docs            ARCHITECTURE, MATHS, DEPLOY, RESEARCH
 
 Déploiement : voir `docs/DEPLOY.md`.
 
+## Contribuer
+
+Les contributions sont bienvenues : ouvrez une issue pour un bug ou une idée, ou une pull request (merci de lancer `npm test` et `npm run build` avant). Voir `docs/ARCHITECTURE.md` pour s'orienter dans le code.
+
+## Licence
+
+[MIT](LICENSE) — libre d'utilisation, de modification et de redistribution.
+
 ## Parallel Packing Lab
 Recherche parallèle et évolutive côté serveur (Elite Pool, bandits, reprise après redémarrage).
 
