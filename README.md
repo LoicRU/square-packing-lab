@@ -15,3 +15,9 @@ npm run preview    # sert dist/ sur :4173
 npm run e2e        # test de fumée Playwright (nécessite preview + playwright)
 npm run bench      # banc de perf headless n = 10 / 100 / 500 / 1000
 ```
+
+## Problème principal : taille maximale
+N carrés **identiques**, rotation libre 0–90°, tous placés : le simulateur cherche le plus grand côté commun (dichotomie sur la taille + recuit sur positions et angles + compression + projection exacte). Statuts : *invalide* / *valide · meilleure solution heuristique* / *optimale prouvée* (uniquement si N = k², ou valeur s(n) démontrée dans la littérature). L'ancien packing général reste disponible via « Packing général ».
+
+## Pipeline Circle → Square (5 phases observables)
+Stratégie par défaut : génération, Circle Packing, transformation, Square Packing, optimisation finale — lecteur avec timeline, retour arrière, trajectoires, zones libres (No-Fit Polygon), statistiques par phase, vérification indépendante. Détails et mesures : [docs/PIPELINE.md](docs/PIPELINE.md). Banc d'essai : `node scripts/bench-pipeline.mjs`.
