@@ -48,7 +48,19 @@ Stratégie par défaut : génération, Circle Packing, transformation, Square Pa
 
 ## Algorithmes
 
-Circle → Square · MaxRects · Guillotine · Skyline · Recuit simulé · Répulsion/forces · Étagères (référence).
+Sept méthodes, toutes vérifiées par le même validateur exact (SAT) ; aucune ne garantit l'optimalité sauf mention contraire.
+
+| Algorithme | Rôle | Complexité | Points forts | Limites |
+|---|---|---|---|---|
+| **Circle → Square** | Pipeline par défaut : cercles → Circle Packing → transformation → Square Packing → optimisation | `O(it · n · k)` | Pédagogique, transformation observable, résultat final toujours valide | Souvent moins dense que les méthodes constructives sur instances denses |
+| **MaxRects** | Suivi des rectangles libres maximaux | `O(n · F)` | Dispositions denses, déterministe, rapide jusqu'à 1000 carrés | Ne trouve pas les dispositions inclinées (ex. n = 5, 11, 17…) |
+| **Guillotine** | Découpe récursive façon scie | `O(n · F)` | Structure simple, très rapide | Rectangles libres disjoints, moins flexible que MaxRects |
+| **Skyline** | Profil de hauteur | `O(n · s)` (s = segments du profil) | Mémoire minimale, excellent sur conteneurs allongés | Ne réutilise pas les trous sous le profil |
+| **Recuit simulé** | Optimisation stochastique des positions et angles | `O(it · n · k)` | Trouve des dispositions inclinées, paramètres réglables en direct | Stochastique, moins dense que les constructifs à grand n |
+| **Répulsion / forces** | Relaxation physique entre carrés | `O(it · n · k)` | Convergence plus régulière que le recuit, sert de relaxeur au pipeline | Peut rester bloqué dans un minimum local |
+| **Étagères** *(référence)* | First-fit decreasing : tri puis rangées | `O(n log n)` | Très simple, sert de borne de comparaison | Densité limitée, ne réoptimise jamais |
+
+Notations : `n` = nombre de carrés, `F` = nombre de rectangles libres, `it` = itérations, `k` = voisins par objet (grille spatiale). Détails complets : [`/algorithms.html`](algorithms.html).
 
 ## Rigueur
 
