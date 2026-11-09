@@ -53,3 +53,13 @@ docs            ARCHITECTURE, MATHS, DEPLOY, RESEARCH
 ```
 
 Déploiement : voir `docs/DEPLOY.md`.
+
+## Parallel Packing Lab
+Recherche parallèle et évolutive côté serveur (Elite Pool, bandits, reprise après redémarrage).
+
+```bash
+npm run build && PPL_TOKEN=secret npm run server   # http://127.0.0.1:8787/parallel.html
+npm run dev                                        # front + proxy /api vers :8787
+npm run bench:parallel
+```
+Node ≥ 22.5, aucune dépendance npm supplémentaire. Voir [docs/PARALLEL.md](docs/PARALLEL.md) et [docs/DEPLOY.md](docs/DEPLOY.md).
