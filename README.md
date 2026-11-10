@@ -18,6 +18,31 @@ Plateforme web interactive (statique, sans backend) pour simuler le **Square Pac
 - Parallel Packing Lab : recherche parallèle persistante côté serveur (Elite Pool, bandits, reprise après redémarrage)
 - 100 % statique côté simulateur : aucun backend requis, aucun tracking
 
+## Aperçu
+
+<table>
+<tr>
+<td width="50%">
+<img src="docs/screenshots/home.png" alt="Page d'accueil de Square Packing Lab">
+<p align="center"><sub>Accueil — présentation du problème et animation du moteur</sub></p>
+</td>
+<td width="50%">
+<img src="docs/screenshots/simulator.png" alt="Simulateur : 25 carrés placés en grille 5×5, remplissage 100 %, optimale prouvée">
+<p align="center"><sub>Simulateur — 25 carrés, remplissage 100 %, <em>optimale prouvée</em></sub></p>
+</td>
+</tr>
+<tr>
+<td width="50%">
+<img src="docs/screenshots/algorithms.png" alt="Page des algorithmes : taille maximale, recherche parallèle, Circle → Square, MaxRects, etc.">
+<p align="center"><sub>Algorithmes — principe, coût et limites des 7 méthodes</sub></p>
+</td>
+<td width="50%">
+<img src="docs/screenshots/learn.png" alt="Page théorique : définition du square packing et valeurs connues de s(n)">
+<p align="center"><sub>Le problème — définition, valeurs connues de s(n)</sub></p>
+</td>
+</tr>
+</table>
+
 ## Sommaire
 
 - [Fonctionnalités](#fonctionnalités)
